@@ -1,0 +1,21 @@
+/*
+avi humlog jo function ko test krna chahte hein usko SUT bolte hein system under test
+aur ye ho sakta hai kisi aur chij pe depend hoga usko dependency kehte hein ye ho sakta hai koi aur team ya kahin aur se aya ho
+
+//////STUB
+what-> sample implementation of that external interface, matlab humlog khud se jo wo  bahar se return krke lata tha humlog usko yhin kr rae ehin hardcore return, 
+<Disadvantage>  
+Ab mano alag alag condition ke liye alag alag input scenario chahiye to kitna nya hardcore object bnayenge, ya phir bahiut sara object type retuen krna ho tab v problem krenge, stubs are basically hardcoded.
+
+</Disadvantage>
+
+--------Now we will understand MOCKITO and MOCK
+mocking is creating object that simulate the behaviour of real objects.
+Unlike stubs, mocks can be dynamically created from code-t runtime.
+Mocks offer more functionallity than stubbing
+we can verify method calls and a lot of other things
+
+todoService mocktodoservice = mock(Todoservice.class);
+stub(mocktodoservice.retrieve("user")).return("");
+when    .thenReturn()
+

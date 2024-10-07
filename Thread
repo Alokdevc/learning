@@ -1,0 +1,19 @@
+There are two ways to create a thread class:->
+1. using Extend keyword
+    in this we simply extend and then we create object and we make it run using obj.start() and the function name is run()
+
+2. Second way is humlog ko kyi bar dusra class v inherit krna pr sakta hai waise case mein humlog krenge implements runnable interface, aur ye jo run method hai wo runnable ka hi hai  but start thread ka hai to hme pehle thread v bnana hoga usmein wo object dalana hoga .
+
+like this
+        Runnable obj1 = new A();
+        Runnable obj2 = new B();
+        Thread t1 = new Thread(obj1);
+        Thread t2 = new Thread(obj2);
+
+        t1.start();
+        t2.start();
+
+Thread tvi tak majedar hai jab tak wo dono different kam kr rha hai ya ye kaho koi same value ko change nhi kr rha ho
+
+jab hum chahte hrin jab tak koi aur thread chal rha hai tab tak main na ruke to waise case mein humlog t1.join() kr denge
+ to es ek sath execution ko rokne ke liye humlog use krenege synchronized work us method pe jisko hum call kr rae hein thread se

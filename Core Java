@@ -1,0 +1,5 @@
+Q. why multiple inheritence allowed in c++ but not in java
+->C++ allows multiple inheritance of classes, offering flexibility but introducing potential complexity, particularly with the diamond problem.
+Java disallows multiple inheritance of classes to avoid complexity and ambiguity, but it allows multiple inheritance via interfaces, offering a simpler and more controlled way to achieve similar functionality.
+
+Q2.

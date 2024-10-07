@@ -1,0 +1,1034 @@
+1.jar file includes our application code and includes server too;
+2. to run spring boot app from command line we can use this command
+    java -jar appname.jar
+3.If we want to do in traditional then we can deploy war file to external server.
+4. we need many extra jar files to work we put all those list in dependency or config file maven install all those
+5.creating a rest controller
+  @RestController
+  //expose 
+   @GetMapping it will handle http get requests
+  we created a package and then we created a class
+ doubt 1--> without adding anything in main how it knows that it will execute that thing
+
+
+16. We learned how to make use of json extension to look pretty rather than raw 
+17. Spring boot actuator security --> because all beans exposed are not good
+     add dependency spring-boot-starter-security  to secure endpoints  after putting this when user try to do /beans it will give signin option  default username is user 
+    customize user and password --> application.properties -> spring.security.user.name = scott   spring.security.user.password = scott
+    we can also exclude endpoints ->> management.endpoints.web.exposure.exclude = health, info
+18. Running spring from command line
+    i. java -jar aapp.jar
+    ii. mvnw
+        mvn clean package install
+
+19. define custom application properties    src/main/resources/application.properties
+   spring read these files and get value 
+then we will inject properties by using @value 
+ we put that wherever we want to use that
+ we can add all our custom config in this application properties like server port , timeout, context-path , actuator , log , debug , security properties
+
+20.Inversion of control
+  the approach of outsourcing the construction and management of objects
+spring container -->i. create and manage objects (inversion d control)  ii. Inject object dependencies (Dependency injection)
+configuring  Spring container
+i. Xml configuration file (legacy)
+ii. java annotation(modern)
+iii. java source code(modern)
+
+dependency injection -> the client delegates to another object the responsibility of providing its dependencies
+mano hum koi object bnana chahte hein ab hoga ye ki uske under koi aur v object ho to usko spring khud hi inject kr dega esi ko bolte hein dependecy injection
+
+Types of injection with spring
+i.construction injection--> use this when we have required dependencies
+ii.setter injection  --->> when we have optional dependencies
+
+autowiring kya krta hai na ki dekhta hai ki bhai es type ka koi match kr rha hai to usko inject kr deta hai
+@component-> ye jab dal dete hrin to eska matlab ye hai ki ye jiske v uper rakha hua hau wo bean ke liye available hai mainly ye class ke upper lgta hai
+@Autowired -> ye jiske v uper lga hua hai eska matlab ye hai ki yahan koi bean inject hua hai generally ye Jahan koi object lga ho wahan use ota hai
+
+MIND THE FLOW
+i. make an interface of coach
+ii. make a class that implements that coach name CricketCoach define that function
+iii. make a restcontroller , inside that make a variable of Coach and make a constructor and put autowire on that make a getmapping on that
+
+21.Spring will scan our java classes for special annotation like @component
+
+@EnableAutoConfiguration -> enables spring boot's auto-configuration support
+@Componentscan -> enables component scanning of current package also recursively scans sub-package
+@configuration -> able to register extra beans with @BEan or other configuration classes
+
+22. main spring boot application class automatically component scans package and sub package 
+
+---->>>>>ye important problem hai in future project bnane mein use hoga  COMPONENENT SCANNING <<<<<-----
+
+23.problem is apne package  ke under ko to scan krke inject kr diya jayega what about other packages mein jab chijo hon tab ka
+we can put all the base package name in @springbootApplication  inside that we can put all the package where we want to scan the thing explicitly list base package to scan
+inside that scanBasePackage = {} eske under sara dalte 
+                            
+ -------------------->> Setter Injection <<<-----------------------
+24.Inject dependencies by calling setter method
+
+Doubt?
+25.Field Injection ->> Inject dependencies by setting field values on your class directly (even private field) accomplished by using java application
+esmein jahan declare kiye  na usi ke uper autowire lga denge to ho jayega
+
+26.--->>>Qualifier injection  @Qualifier -> ye generally constructor ke argument mein dalte hein
+in case of autowire hota kya hai ki ye scan krta hai ki koi hai jo coach ko implement krta hai jo v hota hai usko autowire kr deta hai , agar mano bahut sara ho to us case mein autowire confuse ho jayega ki kisko inject krein
+eska solution hai @Qualifier annotation ko use krna esmein jisko v krna hai inject uska name de denge tab autowired confuse nhi hoga chupchap esko dal dega jiska name pra hua hi
+Dhyan rakhne ke bat ye hai ki exact wo class ki name hi dalenge tvi kam hoga  (jo v name ka class hoga bus uska first letter small kr denge)
+
+
+27. ---->> Primary annotation    @primary (ye generally use class ke upper component ke sath krte hein)
+Uper jo problem humlog discuss kiye the ki jab bahut sara implementation ho to autowire confuse ho jayega ki kisko krna hai kisko nhi to humlog qualifier ka use kiye the ab eska ek aur option ye hai ki -- you coach figure out and tell me who is the primary coach
+to jis v implementation ke uper ek primary annotation lga denge to spring usi ko inject krega qualifier annotation lgane ka koi jarurat nhi h
+dhyan rahe ek class ko hi primary mark kr sakte hein bahut ko kar denge to phir wahi problem
+if we mix primary and qualifier then in that case mind it qualifier has higher priority to uska hi bat manega tumko ye spring
+
+
+
+28.----->>>>>LAZY INITIALLIZTION -->> ya to 
+By default, when application starts, all beans are initialized , spring will create an instance of each and make them available
+to, esse kya problem hota hai na ki jo nhi v use ho rha hai wo v bean initialized ho jata hai , to agar humlog @Lazy annotation lga dete hein tab ye do hi case mein initialize hoga
+1. when it is needed for dependency injection
+2. or it is explicitly requested
+ab dekho to lgega shi chij hai ye to kyun na sab class pe dal dein to eska wo hai ki wo to bahut sara ho jayega to eska koi global configuration nhi hai kya to answer hai han
+->to kya krenge ki application.properties mein jake humlog change kr denge
+   spring.main.lazy-initialization = true
+disadvantage of lazy->
+in web related componennts like @RestCOntroller , not created until  requested -- utna v acha chij nhi h ye 
+
+29.------>>>>>>Scope of Bean --->> @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) ye lgake change kr sakte hein
+   default scope of bean is singleton -> spring container creates only one instance of bean , it is cached in memory , all dependency injections for the bean will reference the same bean
+    scope                          Description
+ Singleton                    create a single shared instance of the bean  -->> esmein kitna v nya bna lein ek pe hi point krega
+ prototype                    create a new bean instance for each container request --> esmein alg alg pe point krega
+ request
+ session
+ application
+ websocket
+
+humlog jis v class ke uper ye @Scope lgake explicitly scope define kr sakte hrin EX: CricketCoach
+
+30.-------->>>>>Bean Lifecycle ------->>>>>>>>>>.
+    a. instance
+    b. dependency injection
+    c. initialize
+    d. usage 
+    e. Destruction
+   bean instantiated -> dependencies injected -> internal spring processsing -> your custom init -> use -> custom destroy 
+   purpose of lifecycle-->
+      we can add custom code during bean initialization -> calling custom business logic methods -> setting up handles to resources (db , sockets, file etc)
+      during bean destruction
+            @PostConstruct ---->>> eske under humlog koi v method likh sakte hrin jo bean bante hi ayega action mein
+            @PreDestroy    ---->>> eske under humlog cleanup type ka koi method likh sakte hein
+   --->>>>>for prototype bean spring doesnt call destoy , we have to do it explicitly
+
+31.------->>>>>>>Configuring bean with java code  ---> matlab avi tak jo humlog class bnate the usko @componennt likhke available krte the ab dusra tarika
+             i. create @Configuration class --> ek class bna lenge jismein ye annotation lga denge
+             ii.Define @Bean method to configure bean
+             iii. inject bean into our controller
+     ab ye sochoge ki esse acha to @Componennt tha but aisa nhi hai kyunki kyi bar humlog jar se bna hua class use krte hrin to waise case mein humlog we can use third-party class as a spring bean matlab jis condition mein hme source code ka aceess nhi hai us case mein ye khel sakte hein
+ 
+matlab samjhe kya kiya gya yahan ye kiya gya ki yahan @Component se nhi kiya gya yahan ye kiya gya ki ek alag se config class bna liya thik wahan pe bean return 
+kiya us coach type ka phir normal jaise democontroller mein krke the qualifier lgake waise hi kiya aur aram se us bean ko use kr liya 
+
+
+
+--------------->>>>>>>>>32. HIBERNATE and JPA  (Part 3  It is not taking endpoints)-------->>>>>>>>>>>
+
+Thinking: - I think es sare kam ko humlog mapping ke sath khel sakte hein right
+
+  hibernate is a framework for persisiting /saving java objects in a database
+i.it handles all of low level sql
+ii. minimize amount of jdbc code
+iii. it provides object to relational mapping (ORM)
+developer defines mapping between java class and database table
+
+. jPA -> Jakarta persisitence API , standard api for orm
+jpa Spec-> hibernate , eclipseLink
+by having a  standard API, we are not locked to vendors implementation
+JDBC mein humlog khud se sql likhte the sara chij khud se perform krte the , but ab Jpa mein behind the scene khud ho jata hai
+
+33.JPA query language
+  how does hibernate/JPA relate to JDBC    java app-->>>jpa/hibernate ---->>.jdbc ---->>>database under se hibernate v wahi jdbc ka kam krta hai
+
+EntityManager is main component for creating queries
+-- based on configs , spring boot will automatically create the beans , dataSource , EntityManager
+ we can inject them into our app
+ spring boot also get DB connection info from application.properties
+-- no need to give jdbc driver class name , spring boot will automatically detect it based on url
+
+34.JPA annotation
+if we only say jpa it means we are talking about jpa hibernate
+Entity class -> java class that is mapped to a database table
+entity class -> must be annotated with @Entity , must have a public or protected no-argument constructor
+Java annotation -> i.map class to a database table @Table(name=" ")
+ ii.map fields to a database columns  @Column
+ @GeneratedValue(strategy=GenerationType.IDENTITY)
+
+35.DAta Access Object is responsible for interfacing with the database
+ DAO has many methods 
+DAO needs a JPA entity manager
+JPA EntityManager is main component for saving/retrieving entities
+DAo-> entitymanager -> datasource -> database
+
+JPA use krne ka do tarika hai ek hai entitymanager aur ek hai jparepository
+for low-level control use Entity manager -> custom kuch query dekhna hai tab yhi shi rhega
+for high-level of abstraction use JPARepository-> geerally for basic 
+
+Student DAO
+i. Define Dao interface
+ii. Define DAo implementation inject entity manager
+iii.Update main app
+
+@Transactional -> it automatically begin and end a transaction for your JPA code
+generally ye humlog us method pe use krte hein jispe hme ye krna hai ki chahe kuch ho jaye ye transaction ko pura hona hi hai 
+
+@repository -> this is for annotating DAO -> it also translates those cheked jdbc annotation to unchecked annotation
+auto increment ka change v kr sakte hrin aram se alter table krke
+
+
+36.----->>>>>************************important complete flow to get connected and CRUD *************************<<<<<<------
+ step 1. package name DAO , in this two one is interface with function save and other is its implementation and autowired entitymanager in this
+         and override save method with entitymanger.persist
+ step 2: ek student class bna lenge usmein schema ke according kya kya chahiye wo sab dal denge constructor , getter setter ke sath r sabmein             annoatation v lga denge
+  step 3 : main function mein implementation
+          studentdao inject krke call kr denge ek function aur us function ke under call kr denge tin chij create object , save object and then   display.
+
+
+--->>>retrieving object with jpa
+generally jab kuch v method hme add krna hota hai to mostly humlog usko Pehle ek interface mein bnake krte hrin phir usko implemnent krke main jagah krte hrin
+studentdao.find(student.class , id);
+
+--->> Querying objects with jpa , multiple object ko acess krne ka (JPQL)
+ matlab humlog jaise sql mein condition sab lgake data nikalte the na usi Tarah yahan pe humlog bahut condition lgake nikal sakte hrin
+only diff is JPQL is based on entity name and entity fields not direct table and
+query sara java class ke according hoga
+jpql mein krne waqt table ke name se nhi class ke name se krenge
+esmein query v likhenge to ye nhi ki database ke table aur entity ke name pe hoga nhi balki yahan hoga java ke entity aur field ke name pe
+JPQL krne ka ek aur ye form hai ki jaise humlog koi condition dene mein kisi value ko use krna chahte hein to waise case mein :data krke dal sakte hrin aur us data ka value bad mein dal denge
+
+---->>> creating a custom query based on requirement or we may say creating a query
+-- entityManager ke help se predefined query ka v use kiya jata hai aur custom query v likhte hein like createQuery
+TypedQuery<Student> theQuery = entitymanager.createQuery(" " , Student.class);
+theQuery.getResultList();
+
+
+//Updating the object in database
+ i. first we need to find particular row
+ii. then we need to set particular column
+ii. we will use entity manager.merge(partiv);
+we can also multiple object 
+.executeUpdate() -> this will return no of rows updated --> its working always add transactional aanotation
+
+//deleting a single entry with id or deleting all with a condition
+
+
+ ---->> creating a database from java file -> Not recommended way
+java code -> jpa/Hibernate ->Sql -> Database
+
+
+37.----------->>>>>>>>>********************* REST CRUD API  (Part 4 ) **********************<<<<<<<<<<<<<<<<<<<<<<------------------
+REST-> representational State Transfer
+lightweight approach for communicating between applications
+rest  is language independent
+client application can use any language and server can also any language
+data format -> javascript object notation
+REst calls can be made over http and also REST is language independent
+use of rest is over http
+post->creating
+get-> read
+put->update
+delete->delete
+http request msg -> i. request line ii. header variable iii.message body
+Generally humlog sare rest controller ko ek rest name ke package se bnake kr denge aur usi ke under rest controller bnayenge
+@RestController
+@RequestMapping("/test")
+@GeMapping("/hello")
+
+--->>>>>DAta binding/serialiazation/deserializarion/maeshalling
+data binding is the process of converting JSON data to a java POJO both way
+spring uses JAckson project behind the scenes
+JAckson hands data binding between JSON and JAVA pojo
+convert json to java pojo -> call setter method on pojo like setfirstname , setid ...etc
+java pojo to json -> call getter method
+I think jackson tvi kam krega jab getter setter lga ho , because behind the scene to wahi chal rha hai na
+
+--->>>spring REst path variable matlab humlog rest api mein koi condition dalenge aur server usko read krke use krega aur uske according response dega
+one doubt is wo theStudents.add() bina postconstruct ke kyun nhi chala
+ @GetMapping("/students/{id}")
+    public Student getStudent(@PathVariable int id)
+
+------->>>>>>>>>>>>*****************Spring Rest Exception Handling***************<<<<<<<<<<<<<<<<------------------
+i.create a custom error response class
+ii. create a custom exception class
+iii. Update Rest service to throw exception if student not found
+iv. Add an exception handler method using @ExceptionHandler
+----@ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException (StudentNotFoundException exc)
+    {
+        //create a studentErrorResponse
+        StudentErrorResponse error = new StudentErrorResponse();
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(exc.getMessage());
+        error.setTimeStamp(System.currentTimeMillis());
+
+        //return ResponseEntity
+
+        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    }
+
+aisa krke ye to kr diye ki koi galat id aye to apna customize response bhej diye but mano user koi aisa parameter mein bhej diya jisko humlog check hi na kr rae ho jaise id ke jagah koi name de diya to us case ko kaise handle kiya jaye, so we also implement handle generic exception
+@ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException(Exception exc)
+
+--->>>global exception handling  @ControllerAdvice
+Avi jo humlog ek generic exception handler use kiye hein wo sara exception handle to kr rha hai but wo sirf rest ke case ka kr rha hai ho sakta hai ki koi dusre controller se v ho jaye exception to usko tackle krne ka v apne ko dekhna hoga
+ye jo annotation hai @ControllerAdvice ka 
+ it pre-process requests to controller
+it post-process responses to handle exception
+perfect for global exception handling
+
+its [flow REST_CLIENT --->>> CONTROLLER_ADVICE ---->>>>> REST_SERVICE] (yahan exception handling ka kaam controller advice mein hota hai)
+
+@ControllerAdvice
+eske under wo dono exception handler utha ke dal denge
+this is important 
+ public ResponseEntity<StudentErrorResponse> handleException (StudentNotFoundException exc)
+
+---------------->>>>>>>>>>>>>>>REST API DESIGN <<<<<<<<<<<<<<<<<<<<<<<<-------------------------------
+
+process involves three things:
+1.review API requirements
+2.Identify main resource/entity
+3.USe HTTP method to assign action on resource
+we should not include actions in endpoints jaise pta na chale dekh ke ye endpoint kya kr rha hai and so on
+
+------------->>>>>>Spring BOOt REST Api Real Timeproject <<<<<<<<<<<<<<<<<<<<---------------
+Esmein humlog ek project bnayenge jo complete CRUD operation perform kre Database pe
+ post     /api/employess -> create a new employee
+GEt       /api/employess
+GEt       /api/employees/{id}
+
+Architecture
+'''Employee Rest Controller  ----> Employee service  ---->>> employee DAo  ----> database'''
+
+
+
+impl dao mein humlog bhaut kch use mein late hein jaise @Repository aur ho gya jaise entitymanger
+
+i.findall ke liye koi function nhi hoota hai usmein hme typedQuery ka use krke query likhna hi prega
+
+Question why we are adding a service layer between employeeRestcontroller and EmployeeDao
+-->>>its intermediate layer for or custom business logic
+yahan ke example se dekhe to mano avi na humlog bus employee dao use kr rae hein may be ye ho sakta hai ki payroll dao ho aur v bahut kuch , dao to matlab ho gya basically database se connect ka tarika , esliye humlog bich mein ek service layer use krenge
+
+es service layer mein -> it provide controller with a single view of the data that we  integerated from multiple backend datasources
+with service layer we delegate call to original dao
+@Service annotation -> it applied to service implementations.
+it will automatically register the service implementation.
+process for service 
+i. service interface
+ii.serviceinterface implementation
+Dekho ab situation ye hai ki humlog service layer se call ho rha hai DAO ko , to humlog jo v transactional annotation sab use krte hein ,wo logically jo hai dao pe nhi service layer pr lgana shi practice hota hai smjhe , esliye humlog ab service layer pr lgayenge.
+
+A.Adding  --->>>void entityManager.persist(theStudent); Employee dbEmployee = entityManager.merge(emp);  @PostMapping("/employees")  ---->>>
+post @RequestBody Employee emp(ye parameter mein likhte hein jab apne ko body mein pura object lena ho to)
+
+B.Updating---->>>int rowsupdated = entityManager.createQuery("UPDATE Student Set lastName='Tester'").executeUpdate(); ------>>>put
+
+C.Retrieving ALL---->>> TypedQuery<Employee> theQuery = entityManager.createQuery("from Employee", Employee.class); --->>Get
+
+        return theQuery.getResultList();
+
+D.Retrieving by iD --->>> Employee emp = entityManager.find(Employee.class , id);
+
+E.Deleting    ------>>>>Employee emp = entityManager.find(Employee.class,id); ------>>>delete
+
+        entityManager.remove(emp);
+
+
+Ek chij Dhyan rakhne wali chij ye hai ki jab humlog @POSTMAPPING kr rae hein tab ye ho rha hai ki body se bhejna hai to same jaisa class ke name ka variable hai same waisa hi hona chahiye warna wo null leke add kr dega
+
+
+
+
+------------------------>>>>>>>>>>>>>>>>>>>*********** SPRING DATA JPA IN SPRINGBOOT ************<<<<<<<<<<<<<<<<<-----------------------------
+
+i.till now we are using standard Jpa api , now we gonna shift  over Spring Data Jpa for our backend DAO 
+ii. second thing ye hai ki mano avi tak jo hai humlog ek entity bnaye to uske according dao likhe , ab hme bahut sara entity hai to sabke respect mein to DAO nhi na individually likhenge to koi to way hona chhaiye ye shi krne ko to way hai ye---->>
+hme aisa solution chhaiye jismein entity type dein key dein sabka crud likh de khud hi--->>> to eska solution hai SPRING DATA JPA
+
+Spring Data Jpa is the solution
+Create a dao and just plug in your entity type and primary key
+Spring will give you a crud implementation for free.
+
+Spring Data Jpa provides the interface (JpaRepository) which provides many crud methods like findAll() , findByID(), save(), deleteById()
+extend jparepository interface and use in repo we need not to implement those method
+
+we simply extends JpaRepsitory <Employee , Integer> Entity type and Primary key
+Ab jab humlog Dao ya Dao Impl to bnaye nhi hein to kaise kiya jaye to eske liye serviceimpl mein humlog kremge ye ki employeerepository name ka objectbna lenge  thik na 
+
+Humlog ab @Transactional v hta sakte hein kyunki JPARepository in built hi usmein deta hai
+
+humlog ye Optional ka use kr sakte hrin , for different pattern instead of having to check for nulls
+
+
+-------------------->>>>>>>>>>>>>>>>>>>>>    SPRING DATA REST IN SPRINGBOOT <<<<<<<<<<<<<<<<<<<<<<<<<<------------------------------------------
+upper wale mein ye problem solve hua ki hme sabka DAO bnane ki jarurat nhi hai 
+Ab Agla Challenge ye aya ki Ab sare entity ka rest api to nhi na bna sakte hein na to uska v kuch solution hona chahiye hai na
+Ab hmara demand ye hai ki 
+create a rest API for me
+USE my existing JpaRepository (entity , primary key)
+Give me all of the basic REST API CRUD features for free
+
+----------------SPRING DATA REST is solution
+Spring Data REST will expose these endpoints for free
+By default Spring Data REST will create endpoints based on entity type
+Simple pluralized form
+first character of entity type is lowercase
+
+Spring DAta Rest endpoints are HATEOAS complaint matlab ye hai ki jab humlog eske through hit krenge to reponse mein wo content to dega hi sath mein metadata v dega
+
+Spring DAta REst Advanced features
+-> PAgination , sorting and searching
+esse kya ho rha hai ki apne ko endpoints to mil rae hein but humlog usko customize nhi kr pa rae hein to usko v krne ka tarika hai apne pas
+------Customize our endpoint base path -------
+By doing change in application.properties
+# SPring DAta Rest properties
+spring.data.rest.base-path=/magic-api
+spring.data.rest.defaukt-page-size
+spring.data.rest.max-page-size
+
+Ab avi tak jo default endpoints the wo to basic plural form ke the na but bahut jagah aisa v ho sakta hai ki plural form nhi ho pata hai ya ye v ho skata hai ki humlog apne man se koi endpoint ka path dena chahe in that what we need to do is
+
+@RepositoryRestResource(path="")
+
+sort by ke liye localhost:8080/magic-api/employees?sort=firstNAme,desc
+
+----->>>>>>>>>>Spring Boot Rest Api security <<<<<<<<<<<<<<------------------
+Things we will learn
+1. secure api
+2. protect url based on responsibility
+3. store users , passwords and roles in DB in encrypted
+
+Spring security use servlet filters in the background
+Two methods of securing an app: -->>>declarative and programmatic
+servlet Filters are used to pre-process / post-process web request
+it can route web request based on security logic
+flow for spring security
+ is web resource protected ---->> is user authenticated --->> is user protected
+ 
+ authentication and authorization are two different terms
+ Spring security use declarative security
+ @Configuration esmein humlog application ka config dal dete hein
+ to add security
+ step1: in pom.xml we add spring-boot-starter-security esse hoga kya ki jab wo application use krna chahenge to username aur password mangega start mein to thik hai user hi by default hoga aur password console mein hoga
+ humlog application.properties mein v dal sakte hein user and password
+ 
+ Ek issue jo mai observe kiya wo ye tha ki jab humlog change kiye username and pass but window ko cut nhi kiye usi tab ko refresh kiye to managa nhi kayde se to mangna chahiye tha phir se dusre tab mein v wahi hal hai jab window ko wapas cut krke khola tab manga username and password
+
+Ab humlog next challenge mein ye kr rae hein ki humlog pehle ek table bna rae hein uska username , password aur role dal rae hein aur based on role humlog khela krenge
+
+In Spring security , passwords are stored using a specific format
+    {id}encodedPassword
+
+Now the thing which we need to do is ki es portion mein humlog user name bnayenge password aur role sabko inmemory lenge database se nhi khel rae hein usse bad mein khelenge to suru krte hein ---->>>>>
+Step 1: Spring security configuration class   @Configuration
+step 2 : we going to use in memory authentication to uske liye humlog use krenge return type 
+            InMemoryUserDetailsManager
+            UserDetails john = User.builder()
+            .username("john")
+            .password("{noop}test123")
+            .roles("Employee")
+            .build();
+            return new InMemoryUserDetailsManager(john,mary,susan);   
+
+till now we added user and password and even with postman we need to select auth and add credentials , but now we are going to provide access based on roles
+we will restrict endpoints based on roles
+
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+
+    http.authorizeHttpRequests(configurer->
+            configurer
+                    .requestMatchers(HttpMethod.GET , "/api/employees").hasRole("Employee")
+                    .requestMatchers(HttpMethod.GET , "/api/employees/**").hasRole("Employee")
+                    .requestMatchers(HttpMethod.POST , "/api/employees").hasRole("Manager")
+                    .requestMatchers(HttpMethod.PUT , "/api/employees").hasRole("Manager")
+                    .requestMatchers(HttpMethod.DELETE , "/api/employees").hasRole("Admin")
+            
+            
+            
+    );
+    
+    ///use HTTP basic authentication 
+    http.httpBasic(Customizer.withDefaults());
+    
+    //disable cross site request forgery
+    http.csrf(csrf->csrf.disable());
+    
+    return http.build();
+
+
+
+--->>>Cross Site Request FOrgery
+ spring security embed additional authentication data/token into all HTML forms
+ basically jahan form wahan csrf protection use kr sakte hein
+ In general not required for stateless api
+
+----------->>>>>>>Now we will use from database user name and password <<<<<<<<<<<-------
+Spring boot ka apna table schema use krenge tab to koi issue nhi h bina jyada code likhe v access ho jayega but agar apna schema likhna ho to humlog apna java code likhenge access sab krne ko
+
+ye authentication sab ke liye spring boot ka default table hota hai USERS and AUTHORITIES krke
+
+Step 1 . ho gya table bna lo database mein data bhar do
+step 2 .   @Bean
+public UserDetailsManager userDetailsManager (DataSource dataSource){
+    
+    return new JdbcUserDetailsManager(dataSource);
+}
+
+step 3 .pehle jo lgaye hue the endpoint pe roles wahi rhega
+
+
+----------------->>>>>>>>>>>Spring security with encryption <<<<<<<<<<<<<<<<-----------------
+
+spring security team recommends using the popular bcrypt algorithm
+its one way encryption
+
+option 1. using  website for this 
+step 1. run sql script that contains encrypted pasword
+
+
+------------>>>>.Ab apna table bnayenge user aur authentication ka uspe kitna hi dependent honge <<<---
+
+Hme apna khud se fetch krna hoga bad bakin sab thik hai 
+
+step 1. we create a table with sql
+
+step 2. update security configuration
+        jdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+        
+        //define query to retrieve a user by username
+        jdbcUserDetailsManager.setUsersByUsernameQuery(
+                "select user_id , pw , active from members where user_id=?"
+        );
+        //define a query to retrieve the authorities / roles by username
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
+                "select user_id , roles from roles where user_id=?");
+        return jdbcUserDetailsManager;
+
+
+--------------------------------------------------------------------
+
+
+------------------->>>>>>>>>>>>>>>>>>>>>SPRING MVC <<<<<<<<<<<<<<<<<------------------------
+
+Question -> why do we need to do this?
+            Because we can use frontend different technology
+Answer imo -> jab frontend v krna ho tab humlog use mein ye late hein
+
+   
+Thymeleaf -> is a java templating engine
+             used to generate the html views for
+  where is this template processed?
+   in a web app . it is processed on the server.
+   results included in   hTML returned to browser.
+   
+   development process
+   1. Add thymleaf to maven pom file
+   2.Develop spring MVC controller
+   3.create THymleaf template
+
+
+   jab thymeleaf hoga add kiya hua to ye dekhega es path pe
+   src/main/resources/templates/helloword.html
+
+   to esliye humlog es location pe ek page bnayenge html ka aur usmein jo variable wahan controller mein declare kiye the usko use kr sakte hein koi issue hi nhi hai
+
+
+   Adding css to this
+   ye humlog resources ke under static uske under kr sakte hein add
+
+   Adding 3rd party css libraries like BOOTStrap
+   1. local installation
+   2.Download Bootstrap files and add to /static/css directory
+
+   -->> other way is we will put reference css file from remote
+
+   humlog css ke liye static ke under css folder bnaye phir usmein css dale aur aram se us css ko html page mein v use kiye aur class v define kiye 
+
+
+   --->>Spring mvc behind the scenes <<<<<<<<<<<-----------
+
+   COMPONENENTS OF A SPRING MVC application
+
+   1. Set of web pages to layout UI components.
+   2. A collection of Spring beans (COntroller , services , etc)
+   3. Spring configuration (XML, annoatation or java)
+
+
+   floowwwww
+
+   Web Browser ->> Front Controller ---Model--> Controller --M->> View Template ----->>>Web....
+   front controller -> DispatcherServlet
+
+   we have to create
+   Model objects
+   View templates
+   controller classes
+
+Spring MVC supports other template too like
+Groovy , Velocity , Freemarker
+
+--->>>>>How to read form Data with Spring MVC <<<<<<<<<<<-----------------
+
+Development process
+1.create controller class
+
+2.show HTML form
+
+3. Process HTML form
+
+
+doubt is do we need to name file name as same which we are returning in controller 
+-->>> Eska answer ekdum shi hai wahi hoga jo return kiya same usi name ka html file ko ye cahalayega
+
+
+to humlog ek controller bnaye phir usmein different endpoint ke regarding ek method bnaye usse jo v return kiye usko humlog ek html file bnaye aur usko wapas bheje 
+
+ye th: krke hi koi chij likhte hrin jaise th:text= ${}                   $
+
+--->>Adding data to Model or getting
+Model is a container for application data.
+
+We can put anything in Model
+and our view page can access data from model
+
+exercise:
+ek form se name lenge aur usko capital krke wapas display krenge
+model mein direct add kr sakte hein model.addAttribute krke aur usko easily humlog direct use le lenge bina kuch kiye hi
+
+public String shoutDude(HttpServletRequest request, Model model)
+ye v dhyan dene wali bat hai ki kaise ek html page se dusre endpoint ko access krne ki kosis ho rhi hai
+<form th:action="@{/processFormVersionTwo}" method ="GET">
+
+----->>>>>>>>Reading HTML form DAta using @RequestParam annotation
+earlier we used this like  String theName = request.getParameter("studentName");
+
+Now public String shoutDudeTwo(@RequestParam("studentName") String theName, Model model)
+
+lec-174
+
+----->>>> Sending data with GET method
+
+Form data is added to end of URL as name/value pairs
+theUrl?field1=value1&field2=value2
+@RequestMapping --->> ye sara chij cover krta hai esmein v agar lga diye method= RequestMethod.GET
+@GetMapping --->>> only hnadles GET method
+
+when method="POST" , form data is passed in body of HTTP request message
+
+POST can also send binary data like file or anything
+
+
+----->>>Spring MVC form tag - Text field    DATA BINDING<<<<<<<<<<<<----
+html forms are used to get input from the user
+
+Spring MVC forms can make use of data binding -> Automatically setting/retrieving data from a java object/bean
+
+task ye hai ki humlog ek form se data lenge then ye form jab process hoga tab to wo ek controller ko call krega then controller ek dusra html template return krega confirmation ka
+ In place of accesing or returning a single we make use of object 
+
+
+ ${student.firstName} == *{firstName}
+ 
+ When form is loaded , spring Mvc will read student from the model , then call getter method
+
+ when form is submitted it then call setter method
+
+ $
+ 
+ show form bnake ek apna class bnaye student , jismein data liye form bharwa ke , then us data to use kiye humlog aur processform mein display kiye
+
+ ---->>>>.Spring MVC FOrm- Drop Down list
+ Mind these things
+ th:action
+ th:object
+ th:field
+
+ Now here we have seen that we have put the select with country hardcorded in html type , our next task is to read this list of countries from application.properties file
+
+ -> process
+   1. Add list of countries to application.properties
+   2. Inject the countries in StudentController using @value
+   3. Add list of countries to the model
+   4.In Html form generate list of <option> tag for countries
+
+----->>>>> Spring MVC with radio button
+<input type="radio" th:field="*{favoriteLanguage}"
+th:each="tempLang: ${languages}"
+th:value="${tempLang}" th:text="${tempLang} "/>  $
+
+--->>> Spring Mvc with CheckBox
+<input type="checkbox" th:field="*{operating}"
+th:each="tempOper: ${operatings}"
+th:value="${tempOper}" th:text="${tempOper} "/>  $ 
+yahan jo operatings hai wo hai application properties ka 
+
+
+------------>>>>>>>>>Spring MVC form validation
+
+Java has a standard Bean validation API
+Defines a metadata model and API for entity validation
+Spring boot and thymleaf also supports this
+
+----Bean validation features
+ required
+ validate length
+ vaidate numbers
+ validate with regular expression
+ custom validation
+
+ validation annotation @NotNull , @Min, @Max, @Size, @Pattern , @Future , @Past
+
+ Development process
+ 1.cretae customer class and add validation rules
+ @NotNull(message ="is required")
+ @Size(min=1,message ="is required")
+private String lastName="";
+
+ 2. add controller code to show html form
+ public String processForm(@Valid @ModelAttribute("customer")  Customer theCustomer, BindingResult theBindingResult)
+
+ 3.develop html form and add validation support
+ <span th:if="${#fields.hasErrors('lastName')}"
+ th:errors="*{lastName}"
+ class="error"></span>   $
+
+ 4.perform validation in the controller class
+ 5.create confirmation page
+
+ ---->>>validating white space 
+ @InitBinder - >  this annotation works as a pre-processor
+
+ It will pre-process each web request to our controller
+
+ method annotated with @InitBinder is executed 
+
+ matlab ye humlog controller pe jane se pehle hi kr denge
+ esse ek aur mast bat kr sakte hein ki jab v hme koi preprocess krna ho controller ko dene se pehle to ye kr sakte hein
+
+ --->> spring Mvc validation with regular expression
+  a sequence of characters that define a search pattern 
+
+  validate a postal code
+  @NotNull(message ="is required")
+  @Size(min=1,message ="is required")
+ private String lastName="";
+
+  //checking for range
+  @NotNull(message ="is required")
+  @Min(value = 0, message = "must be greater than or equal to 0")
+  @Max(value = 10, message = "must be less than or equal to 10")
+  private Integer freePasses;
+
+  @Pattern(regexp = "^[a-zA-Z0-9]{5}", message = "only 5 chars/digits")
+  private String postalCode;
+
+  ////custom validation
+  custom validation bole to based on our business requiremnet we can do 
+  suppose we put a field and in that we want that course code must start with lUV
+
+
+  ------Custom java annotation---------------IMPORTANTTTTT--------------------
+  actually  these annotation has two fields one value and other as message
+  1.create annotation--------
+  @Constraint(validatedBy = CourseCodeConstraintValidator.class)
+  @Target({ElementType.METHOD, ElementType.FIELD})
+  @Retention(RetentionPolicy.RUNTIME)
+  public @interface CourseCode {
+  
+  2.create coursecodeconstraintvalidator-----------
+  public class CourseCodeConstraintValidator implements ConstraintValidator<CourseCode , String> {
+
+
+ ------------------------NEW Spring MVC CRUD -------------------------------------------
+
+ project path: C:\Users\Alok singh\Downloads\07-spring-boot-spring-mvc-crud
+
+Requirement from boss ->>>
+we need to create a web UI for employee directory
+users should be able tp 
+-> get a list of employess
+-> Add a new employee
+-> Update an employee
+-> Delete an employee
+
+architecture 
+employeee controller -> employee service -> employee repository
+
+
+@Controller----
+Spring @Controller annotation is also a specialization of @Component annotation. The @Controller annotation indicates that a particular class serves the role of a controller. Spring Controller annotation is typically used in combination with annotated handler methods based on the @RequestMapping annotation. It can be applied to classes only. It’s used to mark a class as a web request handler. It’s mostly used with Spring MVC applications
+
+es wale mein dekha jaye to hum kr ye rae hein ki database pe crud operation to kr hi rae hein sath mein 
+website pe json format mein nhi balki shi tarike se result dikhana chahte hein
+
+
+<meta http-equiv="refresh" content="0; URL-'employees/list'">
+ye ek tarika hai index.html mein lgane ka jisse turant hi ye redirect kr dega es page pe
+
+avi to bus data show kiye ab ek  button bnayenge jiske bad ek form khulega wo form fillup krne pe employee add hoke show krega
+process
+
+controller mein do chij add krenge
+a.form show krne ko 
+b. form ko process krne ko 
+1.button add employee
+2.html form employee
+3.process form employee
+
+thymeleaf expression can help us build the HTML form:-
+Expression                 Description
+th:action                  Location to send form data
+th:object                  Reference to model attribute 
+th:field                   Bind input field to a property on model attribute
+
+
+-----remember important things
+1.when form is loaded it call get method
+2. when form is saved it call set method
+
+
+----Ek khatranka chij samne aya hai 
+agar mano apne ko display krna hai sort by last name to kya krenge ki Employeerepositoty mein jayenge aurek metod likh denge aur 
+Spring data JPA will parse the method name , looks for a specific format and pattern creates
+appropriate query.... behind the scenes
+
+aur phir service impl mein change kr denge
+
+------ab humlog ek update dalenge
+process
+1.add update button
+2.pre-populate the form
+3.Process form data
+
+update button kya krega ki jab click hoga to wo load kr dega employee from database prepopulate
+//dhayan de rae ho na ki kahan model ka jarurat ho rha hai aur kahan direct service se khela ho rha hai , html mein apna kam model kr rha hai, aur database ke sath sara bat apna service kr rha hai
+
+form ka khela hoga to wahan the model v rahega
+
+-------Delete
+
+------------------------------------------------------------------------------------------------------
+--------------------------------------------- Spring MVC SEcurity ------------------------------------
+-------------------------------------------------------------------------------------------------------
+
+learnings
+1.secure spring mvc web apps
+2.Develop login page
+3.Define users and roles with simple authentication
+4.Protect URLs based on role
+5.Hide/Show content based on role
+6.Store users , passwords and roles in DB
+
+spring mvs provides security with servlet filters
+Servlet filters are used to pre-process/ post-process web requests
+servlet filters can route web requests based on security logic
+spring provides a bulk of security functionality with servlet filters
+
+Authentication and authorization
+
+Different login methods
+1.HTTP basic authentication
+2.Default login form
+3.Custom Login form
+
+things to do
+login page ->homepage-> leader page 
+                     -> admin page   these are based on roles
+
+wo jo login info wala issue tha ki jab tak browser nhi cut hota hai tab tak login hi rehta hai, eska yhi hai ki production mein ye khud hi shi ho jayega
+
+////avi humlog wahi purana waa inmemory hi use kr rae the , ab krenge apan use custom login form
+
+steps 
+1.modify spring configuration to reference custom logic form
+2. develop a controller to sg=how the custom logic form
+3.create custom login form
+
+//ek doubt mere ko ye hai ki jaise kisi object ke related data form sabse lete the to ek model ki tarah pass khud but ye login form mein kyun nhi? 
+thora bahut to ye idea diya ki spring by default name username aur pasword krkr field set krta hai
+aur ye process kr dega by default espe  /authenticateTheUser
+
+
+//development process
+1.configuration class
+2.controller class mein ek bnayenge
+3. phir uske according html page bnayenge
+
+@-> dynamically add 
+allows us to dynamically reference context path of application
+
+
+
+//login page mein galat input dalne ke bad v login to nhi hua baut koi message v nhi dikha to uske liye 
+humlog pehele message dikaheyenge
+
+//logout 
+1.add logout support to spring Security configuration
+2.add logout button to homepage
+3.update login form to display "loggged out page
+
+
+/logout url we get for free
+//logout process
+1. when a logout is rocessed , by default spring security will
+invalidate users http session and remove session cookies
+send user to login page
+append a logout parameter ?logout
+
+//security  config mein hi login logout ka khela ahota hai
+
+//dekho login aur logout ka kam krne ka yhi tarika hai
+1. config wale package mein kam kro
+2. controller bnao page dikhane  ko
+3. page ko apna bnao
+dhyan rahe spring khud se hi authenticated aur logout krke parameter url mein set kr deta hai phir humlog us chij ko check krke page dikha dete hein
+
+//next goal is i want to display roles and users
+// ye kam aa sakta hai jab humlog koi website bnaye kone mein dikhana hai ki aaap kya ho 
+spring security provides support for accessing user id and roles
+principal.username   , principal.authorities
+
+//next target is restrict based on roles
+process
+1.supporting controller and view pages
+2. restrict access based on roles
+humlog spring security mein dal denge accesss 
+requestMatchers(<<>>).hasRole(<<>>)
+                     .hasAnyRole
+      // mind the case and speeling in roles and other things
+
+      /// now goal is ki ek custom denied page bnaye taki jab wo access nhi de to atleast humlog aona error message show kr  sakein 
+
+
+      ---.>>>>>display content based on roles
+// our next goal is ki avi tak to humlog ek link de are the sabko ki es page pe ja sakte ho espe nhi but wo v kyun dena sidha jiske pas access hai usko wo page dikhega jiske as nhi hai usko nhi dikhega 
+content to based  on roles humlog usko khela krenge
+
+to avi tak humlog jo bnaye hein usse kaun kaun page hai sabko dikh rha tha, bus access nhi de arakhe the, ab apne ko aisa krna hai ki page hi usi ko dikhana hai jisko access hai
+
+to eska development process ye hai ki jahan pe humlog home page pe us link aur page ka navigation lga are the na wahin pe humlog control kr denge ki ye section ho tavi ye execute hoga warna nhi
+
+aisa kr denge to content hi nhi dikhega aur agarkisi ko url pta v chal gya to udhar apna authorization lgaye hi hein
+
+to flow samjho 
+access denied krne ke liye to spring configuration file mmein hi kiye but content ko dikhane ke liye jahan homepage pe chije dikha rae the wahan ek tarah se if condition lga diye ki ye fulfil hoga tavi show krna 
+
+///------user acount stored in database
+1.ab database mein v rakhen ka do tarika hai ek hai spring ka by default predefined table schema -> aisa krenge to spring jdbc data read sab krne mein khud hi help kr dega
+2. ek hai apna khud ka table bnana database mein -> es case mein kya hai na ki hme khud se data access krne ka code likhna hoga 
+process
+1.develop sql script to set database atble
+2.add database support to pom
+3.create jdbc properties file application.properties
+4. update spring security configuration to use JDBC
+
+table is
+ 1.users  username, password
+ 2.authorities username , roles
+
+ -->>>>.spring security with password encryption
+ spring security recommends popular bcrypt algo , one way encrypted hashing
+ //humlog kuch nhi karengre esmein aram se bus database mein bcrypt format mein store kr denge
+ ye jdbc ka kam hai ki jo user dega usko ec=ncrypt krke match krega
+////
+
+--------avi tak humlog jdbc ka default table use kr rae the wo users and authorities ka ab wo nhi chahiye ab apne ko khud ka bnana hai table custom
+Ab humlog koi v table ki v column use kr sakte hein
+---only thing which we need to do is to tell spring security to query our own custom tables
+query to find user by username
+query to find roles by user
+
+process
+1. create custom table
+2. update spring security configuration to write query
+
+-------------->>>>>Hibernate advanced Mapping <<<<<<<<<-----------
+
+1.one to one
+2.one to many , Many to one
+3.Many to many
+
+primary key
+foreign key
+cascade-> apply the same operation to related entities
+
+development process
+1.define database table
+2.create instruction detail class
+3.create Instruction class
+4. create main app
+
+
+Entity lifecycle
+Detach -> if entity is detached, it is not associated with a hibernate session
+Merge-> If instance is detached from session, then merge will reatatch to session
+persisit->transitions new instances to managed state. next flush/commit will save in db
+Remove-> transitions managed entity to be removed.Next flush/commit will delete from db
+
+Refresh-> Reload/synch object with data from db.prevents stale data
+
+cascade type
+persist , remove,
+
+--278
+
+
+
+//////-------------->>>>>>>>>>>>>>> Adding photos in mysql <<<<<<<<<<<<<<<<-----------------------
+
+There are two ways :-
+
+1. Direct photo ko compress krke binary mein database mein store kr lenge-> ye jab less frequent aur more secure krna ho tab krte hein
+
+2. File mein save krke path dtabase mein dal denge-> ye jab more frequent aur less secure krna ho tab krte hein
+
+
+
+
+////->>>>>>>>>>>>>>>>>....spring security
+
+Dekho hum jab spring security dependency use krte hrin to apne ko wo login info mangta hai jab wo hum dete hein to server hme ek session id deta hai, phir har request ke sath humlog wo session id dete hrin to apne ko response milt ahai
+Ab ek case ata hai
+CSRF -> cross site request forgery -> eska matlab ye hua ki koi malicious site ye session id leke server ko hit krega to server response krega
+esko bachne ka bahut tarika hai
+1.har bar nya session id bnana
+2.ek csrf token hota hai wo har bar generate hoga to usko use krke
+3.same site strict ka use krke
+mera question ye hai ki csrf token har request ke sath alag generate hota hai kya samjha nhi kuch eska
+agar same hi rehta hai to esmein session mein kya difference
+->maine check kiya although ek session ke hote hue v har request ka alag alag hota ahai
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

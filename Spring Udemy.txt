@@ -1,0 +1,428 @@
+1.jar file includes our application code and includes server too;
+2. to run spring boot app from command line we can use this command
+    java -jar appname.jar
+3.If we want to do in traditional then we can deploy war file to external server.
+4. we need many extra jar files to work we put all those list in dependency or config file maven install all those
+5.creating a rest controller
+  @RestContrller
+  //expose 
+   @GetMapping it will handle http get requests
+  we created a package and then we created a class
+ doubt 1--> without adding anything in main how it knows that it will execute that thing
+
+
+16. We learned how to make use of json extension to look pretty rather than raw 
+17. Spring bo0t actuator security --> because all beans exposed are not good
+     add dependency spring-boot-starter-security  to secure endpoints  after putting this when user try to do /beans it will give signin option  default username is user 
+    customize user and password --> application.properties -> spring.security.user.name = scott   spring.security.user.password = scott
+    we can also exclude endpoints ->> management.endpoints.web.exposure.exclude = health, info
+18. Running spring from command line
+    i. java -jar aapp.jar
+    ii. mvnw
+        mvn clean package install
+
+19. define custom application properties    src/main/resources/application.properties
+   spring read these files and get value 
+then we will inject properties by using @value 
+ we put that wherever we want to use that
+ we can add all our custom config in this application properties like server port , timeout, context-path , actuator , log , debug , security properties
+
+20.Inversion of control
+  the approach of outsourcing the construction and management of objects
+spring container -->i. create and manage objects (inversion d control)  ii. Inject object dependencies (Dependency injection)
+configuring  Spring container
+i. Xml configuration file (legacy)
+ii. java annotation(modern)
+iii. java source code(modern)
+
+dependency injection -> the lient delegates to another object the responsibility of providing its dependencies
+mano hum koi object bnana chahte hein ab hoga ye ki uske under koi aur v object ho to usko spring khud hi inject kr dega esi ko bolte hein dependecy injection
+
+Types of injection with spring
+i.construction injection--> use this when we have required dependencies
+ii.setter injection  --->> when we have optional dependencies
+
+autowiring kya krta hai na ki dekhta hai ki bhai es type ka koi match kr rha hai to usko inject kr deta hai
+@component-> ye jab dal dete hrin to eska matlab ye hai ki ye jiske v uper rakha hua hau wo bean ke liye available hai mainly ye class ke upper lgta hai
+@Autowired -> ye jiske v uper lga hua hai eska matlab ye hai ki yahan koi bean iject hua hai generally ye Jahan koi object lga ho wahan use ota hai
+
+MIND THE FLOW
+i. make an interface of coach
+ii. make a class that implements that coach name CricketCoach define that function
+iii. make a restcontroller , inside that make a variable of Coach and make a constructor and put autowire on that make a getmapping on that
+
+21.Spring will scan our java classes for special annotation like @component
+
+@EnableAutoConfiguration -> enables spring boot's auto-configuration support
+@Componentscan -> enables component scanning of current package also recursively scans sub-package
+@configuration -> able to register extra beans with @BEan or other configuration classes
+
+22. main spring boot application class automatically component scans package and sub package 
+
+                 ---->>>>>ye important problem hai in future project bnane mein use hoga  COMPONENENT SCANNING <<<<<-----
+23.problem is apne package  ke under ko to scan krke inject kr diya jayega what about other packages mein jab chijo hon tab ka
+we can put all the base package name in @springbootApplication  inside that we can put all the package where we want to scan the thing explicitly list base package to scan
+inside that scanBasePackage = {} eske under sara dalte 
+
+
+ -->>Setter Injection <<<----
+24.Inject dependencies by calling setter method
+
+25.Field Injection ->> Inject dependencies by setting field values on your class directly (even private field) accomplished by using java application
+esmein jahan declare kiye  na usi ke uper autowire lga denge to ho jayega
+
+26.--->>>Qualifier injection  @Qualifier -> ye generally constructor ke argument mein dalte hein
+ERR in case of autowire hota kya hai ki ye scan krta hai ki koi hai jo coach ko implement krta hai jo v hota hai usko autowire ke deta hai , agar mano bahut sara ho to us case mein autowire confuse ho jayega ki kisko inject krein
+eska solution hai @Qualifier annotation ko use krna esmein jisko v krna hai inject uska name de denge tab autowired confuse nhi hoga chupchap esko dal dega jiska name pra hua hi
+Dhyan rakhne ke bat ye hai ki exact wo class ki name hi dalenge tvi kam hoga (jo v name ka class hoga bus uska first letter small kr denge
+
+
+27. -->>Primary annotation    @primary (ye generally use class ke upper component ke sath krte hein)
+Uper jo problem humlog discuss kiye the ki jab bahut sara implementation ho to autowire confuse ho jayega ki kisko krna hai kisko nhi to humlog qualifier ka use kiye the ab eska ek aur option ye hai ki -- you coach figure out and tell me who is the primary coach
+to jis v implementation ke uper ek primary annotation lga denge to spring usi ko inject krega qualifier annotation lgane ka koi jarurat nhi h
+dhayn rahe ek class ko hi primary mark kr sakte hein bahut ko ke denge to phir wahi problem
+if we mix primary and qualifier then in that case mind it qualifier has higher priority to uska hi bat manega tumko ye spring
+
+
+
+28.----->>>>>LAZY INITIALLIZTION -->> ya to 
+By default, when application starts, all beans are initialized , spring will create an instance of each and make them available
+to esse kya problem hota hai na ki jo nhi v use ho rha hai wo v bean initialized ho jata hai , to agar humlog @Lazy annotation lga dete hein tab ye do hi case mein initialize hoga
+1. when it is needed for dependency injection
+2. or it is explicitly requested
+ab dekho to lgega shi chij hai ye to kyun na sab class pe dal dein to eska wo hai ki wo to bahut sara ho jayega to eska koi global configuration nhi hai kya to answer hai han
+->to kya krenge ki application.properties mein jake humlog change kr denge
+   spring.main.lazy-initialization = true
+disadvantage of lazy->
+in web related componennts like @RestCOntroller , not created until  requested -- utna v acha chij nhi h ye 
+
+29.------>>>>>>Scope of Bean --->> @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) ye lgake change kr sakte hein
+   default scope of bean is singleton -> spring container creates only one instance of bean , it is cached in memory , all dependency injections for the bean will reference the same bean
+    scope                          Description
+ Singleton                    create a single shared instance of the bean  -->> esmein kitna v nya bna lein ek pe hi point krega
+ prototype                    create a new bean instance for each container request --> esmein alg alg pe point krega
+ request
+ session
+ application
+ websocket
+
+humlog jis v class ke uper ye @Scope lgake explicitly scope define kr sakte hrin
+
+30.-------->>>>>Bean Lifecycle ------->>>>>>>>>>.
+   bean instantiated -> dependencies injected -> internal spring processsing -> your custom init -> use -> custom destroy 
+   purpose of lifecycle-->
+      we can add custom code during bean initialization -> calling custom business logic methods -> setting up handles to resources (db , sockets, file etc)
+      during bean destruction
+            @PostConstruct ---->>> eske under humlog koi v method likh sakte hrin jo bean bante hi ayega action mein
+            @PreDestroy    ---->>> eske under humlog cleanup type ka koi method likh sakte hein
+   --->>>>>for prototype bean spring doesnt call destoy , we have to do it explicitly
+
+31.------->>>>>>>Configuring bean with java code  ---> matlab avi tak jo humlog class bnate the usko @componennt likhke available krte the ab dusra tarika
+             i. create @Configuration class --> ek class bna lenge jismein ye annotation lga denge
+             ii.Define @Bean method to configure bean
+             iii. inject bean into our controller
+     ab ye sochoge ki esse acha to @Componennt tha but aisa nhi hai kyunki kyi bar humlog jar se bna hua class use krte hrin to waise case mein humlog we can use third-party class as a spring bean matlab jis condition mein hme source code ka aceess nhi hai us case mein ye khel sakte hein
+ 
+matlab samjhe kya kiya gya yahan ye kiya gya ki yahan @Component se nhi kiya gya yahan ye kiya gya ki ek alag se config class bna liya thik wahan pe bean return 
+kiya us coach type ka phir normal jaise democontroller mein krke the qualifier lgake waise hi kiya aur aram se us bean ko use kr liya 
+
+
+
+32. HIBERNATE and JPA -------->>>>>>>>>>>
+  hibernate is a framework for persisiting /saving java objects in a dtabase
+i.it handles all of low level sql
+ii. minimize amount of jdbc code
+iii. it provides object to relational mapping (ORM)
+developer defines mapping between java class and database table
+
+. jPA -> Jakarta persisitence API , standard api for orm
+jpa Spec-> hibernate , eclipseLink
+by having a  standard API, we are not locked to vendors implementation
+JDBC mein humlog khud se sql likhte the sara chij khud se perform krte the , nut ab Jpa mein behind the scene khud ho jata hai
+
+33.JPA query language
+  how does hibernate/JPA relate to JDBC    java app-->>>jpa/hibernate ---->>.jdbc ---->>>database under se hibernate v wahi jdbc ka kam krta hai
+
+EntityManager is main component for creating queries
+-- based on configs , spring boot will automatically create the beans , dataSource , EntityManager
+ we can inject them into our app
+ spring boot also get DB connection info from application.properties
+-- no need to give jdbc driver class name , spring boot will automatically detect it based on url
+
+34.JPA annotation
+if we only say jpa it means we are talking about jpa hibernate
+Entity class -> java class that is mapped to a database table
+entity class -> must be annotated with @Entity , must have a public or protected no-argument constructor
+Java annotation -> i.map class to a database table @Table(name=" ")
+ ii.map fields to a database columns  @Column
+ @GeneratedValue(strategy=GenerationType.IDENTITY)
+
+35.DAta Access Object is responsible for interfacing with the database
+ DAO has many methods 
+DAO needs a JPA entity manager
+JPA EntityManager is main component for saving/retrieving entities
+DAo-> entitymanager -> datasource -> database
+
+JPA use krne ka do tarika hai ek hai entitymanager aur ek hai jparepository
+for low-level control use Entity manager -> custom kuch query dekhna hai tab yhi shi rhega
+for high-level of abstraction use JPARepository-> geerally for basic 
+
+Student DAO
+i. Define Dao interface
+ii. Define DAo implementation inject entity manager
+iii.Update main app
+
+@Transactional -> it automatically begin and end a transaction for your JPA code
+generally ye humlog us method pe use krte hein jispe hme ye krna hai ki chahe kuch ho jaye ye transaction ko pura hona hi hai 
+
+@repository -> this is for annotating DAO -> it also translates those cheked jdbc annotation to unchecked annotation
+auto increment ka change v kr sakte hrin aram se alter table krke
+
+
+36.----->>>>>************************important complete flow to get connected and CRUD *************************<<<<<<------
+ step 1. package name DAO , in this two one is interface with function save and othe is its implementation and autowired entitymanager in this
+         and override save method with entitymanger.persist
+ step 2: ek student class bna lenge usmein schema ke according kya kya chahiye wo sab dal denge constructor , getter setter ke sath r sabmein             annoatation v lga denge
+  step 3 : main function mein implementation
+          studentdao inject krke call kr denge ek function aur us function ke under call kr denge tin chij create object , save object and then   display.
+
+
+--->>>retrieving object with jpa
+generally jab kuch v method hme add krna hota hai to mostly humlog usko Pehle ek interface mein bnake krte hrin phir usko implemnent krke main jagah krte hrin
+studentdao.find(student.class , id);
+
+--->> Querying objects with jpa , multiple object ko acess krne ka (JPQL)
+ matllab humlog jaise sql mein condition sab lgake data nikalte the na usi Tarah yahan pe humlog bahut condition lgake nikal sakte hrin
+only diff is JPQL is based on entity name and entity fields not direct table and
+query sara java class ke according hoga
+jpql mein krne waqt table ke name se nhi class ke name se krenge
+esmein query v likhenge to ye nhi ki database ke table aur entity ke name pe hoga nhi balki yahan hoga java ke entity aur firld ke name pe
+JPQL krne ka ek aur ye form hai ki jaise humlog koi condition dene mein kisi value ko use krna chahte hrin to waise case mein :data krke dal sakte hrin aur us data ka value bad mein dal denge
+
+---->>> creating a custom query based on requirement or we may say creating a query
+TypedQuery<Student> theQuery = entitymanager.createQuery(" " , Student.class);
+theQuery.getResultList();
+
+
+//Updating the object in database
+ i. first we need to find particular row
+ii. then we need to set particular column
+ii. we will use entity manager.merge(partiv);
+we can also multiple object 
+.executeUpdate() -> this will return no of rows updated --> its working always add transactional aanotation
+
+//deleting a single entry with id or deleting all with a condition
+
+
+ ---->> creating a database from java file
+java code -> jpa/Hibernate ->Sql -> Database
+
+
+37.----------->>>>>>>>>********************* REST CRUD API **********************<<<<<<<<<<<<<<<<<<<<<<------------------
+REST-> representational State Transfer
+lightweight approach for communicating between applications
+rest  is language independent
+client application can use any language and server can also any language
+data format -> javascript object noatation
+REst calls can be made oer http and also REST is language independent
+use of rest is over http
+post->creating
+get-> read
+put->update
+delete->delete
+http request msg -> i. request line ii. header variable iii.message body
+@RestController
+@RequestMapping("/test")
+@GeMapping("/hello")
+
+--->>>>>DAta binding/serialiazation/deserializarion/maeshalling
+data binding is the process of converting JSON data to a java POJO both way
+spring uses JAckson project behind the scenes
+JAckson hands data binding between JSON ans JAVA pojo
+convert json to java pojo -> call setter method on pojo like setfirstname , setid ...etc
+java pojo to json -> call getter method
+
+--->>>spring REst path variable matlab humlog rest api mein koi condition dalenge aur server usko read krke use krega aur uske according response dega
+one dubt is wo theStudents.add() bina postconstruct ke kyun nhi chala
+ @GetMapping("/students/{id}")
+    public Student getStudent(@PathVariable int id)
+
+------->>>>>>>>>>>>*****************Spring Rest Exception Handling***************<<<<<<<<<<<<<<<<------------------
+i.create a custom error response class
+ii. create a custom exception class
+iii. Update Rest service to throw exception if student not found
+iv. Add an exception handler method using @ExceptionHandler
+----@ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException (StudentNotFoundException exc)
+    {
+        //create a studentErrorResponse
+        StudentErrorResponse error = new StudentErrorResponse();
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(exc.getMessage());
+        error.setTimeStamp(System.currentTimeMillis());
+
+        //return ResponseEntity
+
+        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    }
+
+aisa krke ye to kr diye ki koi galat id aye to apna customize response bhej diye but mano user koi aisa parameter mrin bhej diya jisko humlog check hi na kr rae ho jaise id ke jagah koi name de diya to us case ko kaise handle kiya jaye, so we also implement handle generic exception
+@ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException(Exception exc)
+
+--->>>global exception handling  @ControllerAdvice
+Avi jo humlog ek generic exception handler use kiye hein wo sara exception handle to kr rha hai but wo sirf rest ke case ka kr rha hai ho sakta hai ki koi dusre controller se v ho jaye exception to usko tackle krne ka v apne ko dekhna hoga
+ye jo annotation hai @ControllerAdvice ka 
+ it pre-process requests to controller
+it post-process responses to handle exception
+perfect for global exception handling
+
+its [flow REST_CLIENT --->>> CONTROLLER_ADVICE ---->>>>> REST_SERVICE] (yahan exception handling ka kaam controller advice mein hota hai)
+
+@ControllerAdvice
+eske under wo dono exception handler utha ke dal denge
+this is important 
+ public ResponseEntity<StudentErrorResponse> handleException (StudentNotFoundException exc)
+
+---------------->>>>>>>>>>>>>>>REST API DESIGN <<<<<<<<<<<<<<<<<<<<<<<<-------------------------------
+
+process involves three things:
+1.review API requirements
+2.Identify main resource/entity
+3.USe HTTP method to assign action on resource
+we should not include actions in endpoints jaise pta na chale dekh ke ye endpoint kya kr rha hai and so on
+
+------------->>>>>>Spring BOOt REST Api Real TImeproject <<<<<<<<<<<<<<<<<<<<---------------
+Esmein humlog ek project bnayenge jo complete CRUD operation perform kre Database pe
+ post     /api/employess -> create a new employee
+GEt       /api/employess
+GEt       /api/employees/{id}
+
+Architecture
+Employee Rest Controller  ----> EMployee service  ---->>> employee DAo  ----> database
+
+
+
+impl dao mein humlog bhaut kch use mein late hein jaise @Repository aur ho gya jaise entitymanger
+
+i.findall ke liye koi function nhi hoota hai usmein hme typedQuery ka use krke query likhna hi prega
+
+Question why we are adding a service layer between employeeRestcontroller and EmployeeDao
+-->>>its intermediate layer for or custom business logic
+yahan ke exam se dekhe to mano avi na humlog bus employee dao use kr rae hrin may be ye ho sakta hai ki payroll dao ho aur v bahut kuch , dao to matlab ho gya basically database se connect ka tarika , esliye humlog bich mein ek service layer use krenge
+
+es service layer mein -> it provide controller with a singe view of the data that we  integerated from multiple backend datasources
+with service layer we delegate call to original dao
+@Service annotation -> it applied to service implementations.
+it will automatically register the service implementation.
+process for service 
+i. service interface
+ii.
+Dekho ab situation ye hai ki humlog service layer se call ho rha hai DAO ko , to humlog jo v transactional annotation sab use krte hrin ,wo logically jo hai dao pe nhi service layer pr lgana shi practice hota hai smjhe , esliye humlog ab service layer pr lgayenge.
+
+A.Adding  --->>>void entityManager.persist(theStudent); Employee dbEmployee = entityManager.merge(emp);  @PostMapping("/employees")  ---->>>post @RequestBody Employee emp
+
+B.Updating---->>>int rowsupdated = entityManager.createQuery("UPDATE Student Set lastName='Tester'").executeUpdate(); ------>>>put
+
+C.Retrieving ALL---->>> TypedQuery<Employee> theQuery = entityManager.createQuery("from Employee", Employee.class); --->>Get
+
+        return theQuery.getResultList();
+
+D.Retrieving by iD --->>> Employee emp = entityManager.find(Employee.class , id);
+
+E.Deleting    ------>>>>Employee emp = entityManager.find(Employee.class,id); ------>>>delete
+
+        entityManager.remove(emp);
+
+
+Ek chij DHyan rakhne wali chij ye hai ki jab humlog @POSTMAPPING kr rae hein tab ye ho rh ahi ki body se bhejna hai to same jaisa class ke name ka variable hai same waisa hi hona chahiye warna wo null leke add kr dega
+
+
+
+
+------------------------>>>>>>>>>>>>>>>>>>>.*********** SPRING DATA JPA IN SPRINGBOOT ************<<<<<<<<<<<<<<<<<-----------------------------
+
+i.till now we are using standard Jpa api , now we gonna shift  over Spring Data Jpa for our backend DAO 
+ii. second thing ye hai ki mano avi tak jo hai humlog ek entity bnaye to uske according dao likhe , ab hme bahut sara entity hai to sabke respect mein to DAO nhi na individually likhenge to koi to way hona chhaiye ye shi krne ko to way hai ye---->>
+hme aisa solution chhaiye jismein entity type dein key dei sabka crud likh de khud hi--->>> to eska solution hai SPRING DATA JPA
+
+Spring Data Jpa is the solution
+Create a dao and just plug in your entity type and primary key
+Spring will give you a crud implementationfor free
+
+Spring DAta Jpa provides the interface (JpaRepository) which provides many crud methods like findAll() , findByID(), save(), deleteById()
+extend jparepository interface and use in repo we need not to implement those method
+
+we simply extends JpaRepsitory <Employee , Integer> Entity type and Primary key
+Ab jab humlog Dao ya Dao Impl to bnaye nhi hein to kaise kiya jaye to eske liye serviceimpl mein humlog kremge ye ki employeerepository name ka objectbna lenge  thik na 
+
+Hulog ab @Transactional v hta sakte hein kyunki JPARepository in built hi usmein deta hai
+
+humlog ye Optional ka use kr sakte hrin , for different pattern instead of having to check for nulls
+
+
+-------------------->>>>>>>>>>>>>>>>>>>>>    SPRING DATA REST IN SPRINGBOOT <<<<<<<<<<<<<<<<<<<<<<<<<<------------------------------------------
+upper wale mein ye problem solve hua ki hme sabka DAO bnane ki jarurat nhi hai 
+Ab Agla Challenge ye aya ki Ab sare entity ka rest api to nhi na bna sakte hein na to uska v kuch solution hona chahiye hai na
+Ab hmara demand ye hai ki 
+create a rest API for me
+USE my existing JpaRepository (entity , primary key)
+Give me all of the basic REST API CRUD features for free
+
+----------------SPRING DATA REST is solution
+Spring Data REST will expose these endpoints for free
+By default Spring Data REST will create endpoints based on entity type
+Simple pluralized form
+first character of entity type is lowercase
+
+Spring DAta Rest endpoints are HATEOAS complaint matlab ye hai ki jab humlog eske through hit krenge to reponse mein wo content to dega hi sath mein metadata v dega
+
+Spring DAta REst Advanced features
+-> PAgination , sorting and searching
+esse kya ho rha hai ki apne ko endpoints to mil rae hein but humlog usko customize nhi kr pa rae hein to usko v krne ka tarika hai apne pas
+------Customize our endpoint base path -------
+Bt doing change in application.properties
+# SPring DAta Rest properties
+spring.data.rest.base-path=/magic-api
+spring.data.rest.defaukt-page-size
+spring.data.rest.max-page-size
+
+Ab avi tak jo default endpoints the wo to basic plural form ke the na but bahut jagah aisa v ho sakta hai ki plural form nhi ho pata hai ya ye v ho skata ahi ki humlog apne man se koi endpoint ka path dena chahe in that what we need to do is
+
+@RepositoryRestResource(path="")
+
+sort by ke liye localhost:8080/magic-api/employees?sort=firstNAme,desc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

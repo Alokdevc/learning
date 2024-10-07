@@ -1,0 +1,273 @@
+For configuration Spring boot says i have application.properties file where you can add your own custom configuration
+
+Q. What is dependency injection?
+-> some object is dependent on other object 
+   overall goal ye hai ki apne ko loosely coupled application bnana hai to 
+   dependency injection mein kya hota hai ki ek dependency injection container hota hai jo ki us object ko bnake es nye object mein dal deta hai ab question ye hai ki ye kaise hota hai to eska answer ye hai ki jo object apne ko chahiye uske class ko @component se likh denge aur jahan chahiye usko likh denge @Autowired to ye kam ho jayega
+   Ab ek aur bat ye hai ki humlog aisa esliye v krte hein ki ab testing waqt humlog bus es component ko test krna chahte hein to us object ko kyun test krna to usko humlog bus mock kr denge to eske liye v loosely coupled hona important hai
+
+* If we look at springApplication class that run method returns object of configurableapplicationcontext
+ esmein ya to humlog explicitily wo pojo class ka bna sakte hein object with new keyword ya phir ye kr sakte hein ki
+ ConfigurableApplicationContext context = SpringApplication.run(DemoApplication.class,args);
+
+ And then Alien a = context.getBean(Alien.class); <<ye container se uthakr de dega>>
+
+ in this run function, it will start ioc container that will create all the objects par ye object usi ka bnayega jiska as a developer hum chahte hein jiska humko bnana hai us class ke upper humlog lga denge @component
+f
+spring framework uses a concept of singleton design pattern which means it will give object beforehand
+if we want our instance to different then we put prototype as
+@Scope(value ="prototype") below @component  but eska ek ye hai ki jaise pehle by default ek instance to deta hi tha, but ab prototype use krne pe jab tak humlog getbean nhi krenge tab tak koi instance us object ka nhi bnega
+
+@Autowired 
+Dekho eska use ye hai ki mano ek object hai wo dependent hai dusre object par to humlog wo dusra object bna denge uspe @component krke usko container mein available v kra denge ab pehle object ko pta kaise chalega ki dusra available hai to pehle ke uper autowired lga denge esse ye hoga ki spring ko hum bol rae hein ki bhai khud se khoj lo 
+By default autowire search for type not name 
+agar humlog by name search krna chahte hein to autowire ke niche ek aur lga denge annotation @Qualifier aur usmein wo name dal denge jisse humlog search krna chhate hein ek aur bat koi v class kis name se visible hoga wo hum change kr sakte hein @Component("jdj") ke under dalke warna by default name hota hai us class ka name first letter small krke 
+
+* By default springboot doesnot support jsp we have to add support for that
+  open pom.xml and dependency tomcat:jasper
+  phir humlog aram se kr lenge @controller krke ek class bnayenge phir @Requestmapping mein url leke ek home.jsp return kr denge phir eske under jo content hoga wo return ho jayega but dhyan rahe hme ye webapp folder emin es home.jsp ko rakhna hoga
+  agar kahin aur rakhna hai to hme kuch changes krna hoga to humlog application.properties mein changes kr denge 
+  path is defined as prefix -> yahan humlog wo location dal denge
+  and extension is defined as suffix -> extension dal denge phir chalne lega 
+  aur v kuch add krna hai to kr denge apna customized configuration
+
+  * dekho ab client koi data bhejna chahta hai to usko kaise kre access server side pe
+  pehle jo servlet ka concept tha usmein kya tha na ki apan log ek object bnate the httpservlet request ka and using that object we fetch data 
+  but spring kya krta hai ki direct de deta hai humlogo ko object bnane ki jarurat nhi hai sidhe HttpservletRequest krke use mein le ayenge aur phir .getParameter krke access kr sakte hein
+
+  servet mein dono ka object bna sakte hein httpservlet request ka v httpservlet response ka v
+  dekho agar humlog paramter mein direct (String name ) v krenge to v le lega but eske liye apne ko url ka variable name aur yahan paramter ka variable name same rakhna hoga, agar hum chahte hein ki parameter mein koi aur name rakhe to uske liye kuch aur krna hoga
+  uske liye krenge (@RequestParam("wo url ka name"))
+
+  ek aur chij us jsp mein pass krne ke liye kr sakte hein that is 
+  modelview logic
+
+  public ModelAndView home(@RequestParam(""))
+  {
+     ModelAndView mv = new ModelAndView();
+     mv.addObject();
+     mv.setViewName();
+     return mv;
+  }
+
+  Avi tak to chalo ek hi data bheje hein parameter se to kam chal gya apna ab mano bahut sara data lena hai url se to usko kaise krenge ?
+  ek to mast yhi tarika hai ki ek spring boot mein hi class bna lo un sare variable ka aur aram se paramter mein hi lelo (Alien alien)
+  khud hi wo sabko sma lega 
+
+  * Spring boot Jpa 
+   for database connection we use Jpa in springboot
+   we can use any database like sql,nosql or inmemorydatabase h2 
+
+   for enabling h2 database we go inside application.properties and will do this
+   spring.h2.console.enabled= true
+
+   everytime we relaunch application, we may loose data
+
+
+
+
+
+
+  ----------------->>>>>>QUESTIONS<<<<<<<<<<<<<----------------------->>>>>>>>>>>>>
+ --->>>>what is bean in spring boot
+ ChatGPT
+In Spring Boot (and the broader Spring Framework), a Bean is an object that is managed by the Spring IoC (Inversion of Control) container. Beans are the fundamental building blocks of a Spring application, and they are created, configured, and managed by the Spring container.
+
+Key Concepts Related to Beans in Spring:
+1.Spring IoC Container:
+
+The IoC container is responsible for managing the lifecycle of beans, including their instantiation, configuration, and destruction.
+The container manages dependencies between beans, injecting the necessary dependencies into beans where needed (Dependency Injection).
+2. Bean Definition:
+
+Beans can be defined in several ways in Spring Boot:
+Annotations: The most common way in Spring Boot is using annotations like @Component, @Service, @Repository, and @Controller. These annotations automatically register the class as a bean in the Spring context.
+Java Configuration: Using @Configuration classes and @Bean methods to define beans.
+XML Configuration: Although less common in Spring Boot, beans can also be defined in an XML configuration file.
+Bean Lifecycle:
+
+The Spring container controls the entire lifecycle of a bean, from creation to destruction.
+The lifecycle includes various phases like instantiation, dependency injection, initialization, and destruction.
+You can define custom initialization and destruction methods using @PostConstruct and @PreDestroy annotations or by implementing InitializingBean and DisposableBean interfaces.
+Creating Beans in Spring Boot:
+1. Using Annotations:
+@Component: A general-purpose annotation for any Spring-managed component.
+@Service: A specialized @Component that indicates a service layer component.
+@Repository: A specialized @Component that indicates a data access layer component.
+@Controller: A specialized @Component used for web controllers in Spring MVC.
+Example:
+
+java
+Copy code
+@Service
+public class MyService {
+    // This class is now a Spring-managed bean
+}
+2. Using @Bean Annotation:
+@Bean is used in a @Configuration class to explicitly define a bean.
+Example:
+
+java
+Copy code
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MyService myService() {
+        return new MyService();
+    }
+}
+Bean Scopes:
+Beans in Spring can have different scopes, which define the lifecycle and visibility of the bean:
+
+Singleton: (Default) Only one instance of the bean is created for the Spring container.
+Prototype: A new instance is created each time the bean is requested.
+Request: A new instance is created for each HTTP request (used in web applications).
+Session: A new instance is created for each HTTP session (used in web applications).
+Application: A single instance is created for the lifecycle of a ServletContext (used in web applications).
+WebSocket: A single instance is created for the lifecycle of a WebSocket.
+Dependency Injection with Beans:
+Spring manages the dependencies between beans automatically. You can inject one bean into another using:
+
+Constructor Injection: Recommended approach.
+Setter Injection: Allows for optional dependencies.
+Field Injection: Least preferred due to lack of immutability and testability.
+Example of Constructor Injection:
+
+java
+Copy code
+@Service
+public class OrderService {
+
+    private final PaymentService paymentService;
+
+    @Autowired
+    public OrderService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+
+    // OrderService depends on PaymentService
+}
+Summary:
+In summary, a bean in Spring Boot is a fundamental building block managed by the Spring IoC container, allowing you to create, configure, and manage dependencies between different components of your application in a clean and decoupled way.
+
+Question what is JSP
+JSP (JavaServer Pages) is a technology used for building dynamic web pages in Java web applications. JSP allows developers to embed Java code directly into HTML pages, which are then compiled and executed on the server to generate dynamic content.
+JSP can be used as the view technology in a Spring Boot application, but it requires additional configuration and is generally considered less ideal compared to more modern templating engines like Thymeleaf. Despite this, JSP remains a viable option for legacy applications or those with existing JSP-based infrastructure.
+
+question what are the difference between restcontroller and controller?
+what is difference between controller and rest controller in springboot
+ChatGPT
+In Spring Boot, @Controller and @RestController are annotations used to define web controllers, but they serve slightly different purposes:
+
+@Controller
+Purpose: The @Controller annotation is used to define a standard web controller that handles web requests and returns a view. This is typically used in MVC (Model-View-Controller) applications.
+View Rendering: When a method in a class annotated with @Controller returns a string, it is interpreted as the name of a view (like a JSP or Thymeleaf template) to be rendered.
+Example:
+java
+Copy code
+@Controller
+public class MyController {
+
+    @GetMapping("/home")
+    public String homePage(Model model) {
+        model.addAttribute("message", "Welcome to the homepage!");
+        return "home"; // This refers to the "home.html" or "home.jsp" view template
+    }
+}
+@RestController
+Purpose: The @RestController annotation is a specialized version of @Controller. It is used to create RESTful web services where the methods return data directly as JSON, XML, or other formats, rather than rendering a view.
+Automatic @ResponseBody: When a class is annotated with @RestController, it automatically applies @ResponseBody to all the methods, meaning the return values of those methods are serialized and sent directly as the HTTP response body.
+Example:
+java
+Copy code
+@RestController
+public class MyRestController {
+
+    @GetMapping("/greeting")
+    public String greeting() {
+        return "Hello, World!"; // This will return "Hello, World!" as plain text or JSON response
+    }
+}
+Key Differences:
+View Rendering vs. Data Response:
+
+@Controller is used when you want to return a view (like HTML).
+@RestController is used when you want to return a data response, like JSON or XML.
+ResponseBody:
+
+In @Controller, if you want to return a JSON or XML response, you need to annotate the method with @ResponseBody.
+In @RestController, all methods are implicitly annotated with @ResponseBody.
+Usage:
+
+Use @Controller when you're building a traditional web application that returns views.
+Use @RestController when you're building a RESTful API that returns data directly to the client.
+
+Question what is spring mvc?
+Spring MVC (Model-View-Controller) is a framework within the larger Spring Framework that is used for building web applications. It follows the MVC design pattern, which separates the application into three interconnected components: Model, View, and Controller. This separation helps manage the complexity of large-scale applications, making them easier to develop, maintain, and test.
+
+Question-> What is Spring Jpa
+ Spring Data JPA is a part of the Spring Data family that provides a simplified and enhanced integration of the Java Persistence API (JPA) with the Spring Framework. It abstracts the complexities of JPA and ORM (Object-Relational Mapping) by providing a higher-level, more intuitive way to interact with relational databases in Java applications.
+
+ Question -> What is inmemory database H2
+ H2 Database:
+H2 is a popular in-memory database for Java applications. It can also operate in embedded mode or as a standalone database, providing flexibility for various use cases.
+
+Key Features of H2:
+In-Memory Mode:
+
+When used in in-memory mode, the entire database is stored in the application’s RAM, providing very fast access. The database is lost when the JVM (Java Virtual Machine) is shut down unless configured otherwise.
+Embedded Mode:
+
+H2 can run embedded within a Java application, meaning it runs within the same process as the application. This eliminates the need for a separate database server and simplifies deployment.
+Standalone Mode:
+
+H2 can also run as a standalone database server, allowing multiple applications to connect to it simultaneously.
+SQL Support:
+
+H2 supports standard SQL, making it easy to migrate between H2 and other relational databases like MySQL, PostgreSQL, etc.
+Web Console:
+
+H2 provides a web-based console for executing SQL queries and managing the database, making it easier for developers to interact with the database.
+Persistence Options:
+
+While primarily used as an in-memory database, H2 can also persist data to disk, allowing for a hybrid approach where data is stored in RAM and occasionally written to disk.
+
+question :- How spring boot solved problem of spring
+1. Reduced Configuration Complexity
+2. Embedded Server
+3. Starter POMs
+4. Production-Ready Features
+5. Opinionated Defaults
+6. DevTools for Faster Development
+7. Simplified Testing
+8. Command-Line Interface (CLI)
+9. Microservices Support
+
+Question: Maven 
+Maven is a project management tool , helps in building , dependency managemenet and deployment
+types of maven repository
+1. local 
+2. Central
+3. Remote -> company specific
+
+maven lifecycle
+1. validate -> validate structure pom.xml ho gya
+2. compile -> convert .java files to .class files
+3. test -> performs unit test
+4. Package -> compiled code into jar or war
+5. verify -> whether all test cases are passed
+6. install -> install packaged code to local repository
+7. deploy -> copies the packaged code to the remote for sharing with other developers
+
+Question what is spring INversion of control
+Inversion of Control (IoC) is a fundamental concept in Spring Boot that shifts the responsibility of managing dependencies from application code to the Spring Framework. By leveraging IoC, Spring Boot applications are more modular, testable, and maintainable, promoting a clean separation of concerns. This makes IoC a key feature in building robust and flexible enterprise applications.
+
+Question ;- what is hibernate
+
+Hibernate is an open-source Object-Relational Mapping (ORM) framework for Java that simplifies database interactions by mapping Java objects to database tables, automating SQL query generation, and managing transactions. It provides features like caching, lazy and eager loading, and support for various database operations, reducing the need to write raw SQL and handling complex database interactions in an object-oriented manner.
+
+
+
+  
+
